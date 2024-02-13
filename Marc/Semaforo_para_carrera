@@ -1,0 +1,72 @@
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int ledActual = 1; //led central
+bool pAlante = true;
+
+void setup() {
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+ delay(200);
+
+ semaforo();
+  delay(1000);
+  
+   
+}
+
+
+void loop() {
+  FastLED.clear();
+  leds[ledActual] = CRGB::Purple;
+  leds[ledActual +1] = CRGB::Purple;
+  leds[ledActual -1] = CRGB::Purple;
+  delay(50);
+  FastLED.show();
+  if (pAlante) {
+    ledActual++;
+    if (ledActual >118 ){
+      pAlante = false;
+    }
+  }
+  else {
+    ledActual --;
+    if (ledActual <1 ){
+      pAlante = true;
+      semaforo();
+    }
+  }
+}
+
+void semaforo()  {
+  FastLED.clear();
+   leds[4] = CRGB::Red;
+  FastLED.show();
+  delay(10);
+    leds[5] = CRGB::Red;
+    FastLED.show();
+  delay(10);
+    leds[6] = CRGB::Red;
+    FastLED.show();
+    delay(1500);
+    FastLED.clear();
+    delay(10);
+    leds[4] = CRGB::Yellow;
+  FastLED.show();
+  delay(10);
+  leds[5] = CRGB::Yellow;
+  FastLED.show();
+  delay(10);
+  leds[6] = CRGB::Yellow;
+  FastLED.show();
+  delay(1500);
+  FastLED.clear();
+   leds[4] = CRGB::Green;
+  FastLED.show();
+  delay(10);
+  leds[5] = CRGB::Green;
+  FastLED.show();
+  delay(10);
+  leds[6] = CRGB::Green;
+  FastLED.show();
+}
