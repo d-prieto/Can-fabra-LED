@@ -1,6 +1,8 @@
 #include <FastLED.h>
 #define NUM_LEDS 180
+
 #define DATA_PIN 10
+
 CRGB leds[NUM_LEDS];
 int ledActual = 1; //led central
 bool pAlante = true;
@@ -93,6 +95,8 @@ void semaforo()  {
   delay(10);
   leds[6] = CRGB::Green;
   FastLED.show();
+
   tone(8, 1000, 500);
+
   delay(600);
 }
