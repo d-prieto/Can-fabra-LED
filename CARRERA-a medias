@@ -1,0 +1,113 @@
+#include <FastLED.h>
+#define NUM_LEDS 180
+
+#define DATA_PIN 10
+#define BOTON_JOYSTICK 4
+
+CRGB leds[NUM_LEDS];
+int posicionCoche = 1; //led central
+bool pAlante = true;
+
+int estadoBoton =0;
+int estadoEjeY = 0;
+int estadoEjeX = 0;
+
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(BOTON_JOYSTICK, INPUT_PULLUP);
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+ delay(200);
+// for (int n; n < NUM_LEDS; n ++) {
+//  leds[n] = CRGB::White;
+//  FastLED.show();
+//  delay(50);
+// }
+
+delay(500);
+FastLED.clear();
+FastLED.show();
+delay(3000);
+ semaforo();
+  delay(1000);
+  
+
+}
+
+
+void loop() {
+  leerBotones();
+  mostrarCoche();
+}
+
+void leerBotones() {
+estadoBoton =digitalRead(BOTON_JOYSTICK);
+Serial.println(estadoBoton);
+estadoEjeY = analogRead(A1);
+estadoEjeX = 0;
+Serial.println(estadoBoton);
+  
+}
+
+void mostrarCoche() {
+  if (posicionCoche > NUM_LEDS) {
+    posicionCoche = NUM_LEDS-2;
+  }
+     if (posicionCoche < 1) {
+    posicionCoche = 1;
+  }
+  
+}
+
+void semaforo()  {
+
+  FastLED.clear();
+   leds[4] = CRGB::Red;
+  FastLED.show();
+  delay(10);
+    leds[5] = CRGB::Red;
+    FastLED.show();
+  delay(10);
+    leds[6] = CRGB::Red;
+    FastLED.show();
+    tone(8, 670, 500);
+    delay(1500);
+    FastLED.clear();
+    delay(10);
+    leds[4] = CRGB::Red;
+  FastLED.show();
+  delay(10);
+  leds[5] = CRGB::Red;
+  FastLED.show();
+  delay(10);
+  leds[6] = CRGB::Black;
+  FastLED.show();
+  tone(8, 670, 500);
+  delay(1500);
+  FastLED.clear();
+  delay(10);
+   leds[4] = CRGB::Red;
+  FastLED.show();
+  delay(10);
+  leds[5] = CRGB::Black;
+  FastLED.show();
+  delay(10);
+  leds[6] = CRGB::Black;
+  FastLED.show();
+  tone(8, 670, 500);
+  delay(1500);
+   FastLED.clear();
+   delay(10);
+    leds[4] = CRGB::Green;
+  FastLED.show();
+  delay(10);
+  leds[5] = CRGB::Green;
+  FastLED.show();
+  delay(10);
+  leds[6] = CRGB::Green;
+  FastLED.show();
+
+  tone(8, 1000, 500);
+
+  delay(600);
+}
