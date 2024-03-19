@@ -2,19 +2,27 @@
 #define NUM_LEDS 180
 
 #define DATA_PIN 10
+#define BOTON_JOYSTICK 4
 
 CRGB leds[NUM_LEDS];
-int ledActual = 1; //led central
+int posicionCoche = 1; //led central
 bool pAlante = true;
 
+int estadoBoton =0;
+int estadoEjeY = 0;
+int estadoEjeX = 0;
+
+
 void setup() {
+  Serial.begin(9600);
+  pinMode(BOTON_JOYSTICK, INPUT_PULLUP);
    FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
  delay(200);
- for (int n; n < NUM_LEDS; n ++) {
-  leds[n] = CRGB::White;
-  FastLED.show();
-  delay(50);
- }
+// for (int n; n < NUM_LEDS; n ++) {
+//  leds[n] = CRGB::White;
+//  FastLED.show();
+//  delay(50);
+// }
 
 delay(500);
 FastLED.clear();
@@ -28,28 +36,31 @@ delay(3000);
 
 
 void loop() {
-  FastLED.clear();
-  leds[ledActual] = CRGB::Purple;
-  leds[ledActual +1] = CRGB::Purple;
-  leds[ledActual -1] = CRGB::Purple;
-  delay(50);
-  FastLED.show();
-  if (pAlante) {
-    ledActual++;
-    if (ledActual >118 ){
-      pAlante = false;
-    }
+  leerBotones();
+  mostrarCoche();
+}
+
+void leerBotones() {
+estadoBoton =digitalRead(BOTON_JOYSTICK);
+Serial.println(estadoBoton);
+estadoEjeY = analogRead(A1);
+estadoEjeX = 0;
+Serial.println(estadoBoton);
+  
+}
+
+void mostrarCoche() {
+  if (posicionCoche > NUM_LEDS) {
+    posicionCoche = NUM_LEDS-2;
   }
-  else {
-    ledActual --;
-    if (ledActual <1 ){
-      pAlante = true;
-      semaforo();
-    }
+     if (posicionCoche < 1) {
+    posicionCoche = 1;
   }
+  
 }
 
 void semaforo()  {
+
   FastLED.clear();
    leds[4] = CRGB::Red;
   FastLED.show();
