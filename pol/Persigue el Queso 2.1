@@ -1,0 +1,69 @@
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int ledActual = 1; //led central
+int queso = random(NUM_LEDS)% NUM_LEDS;
+int puntos = 0;
+int tiempo = 0;
+bool juego = true;
+
+void setup() {
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+   Serial.begin(9600);
+    randomSeed(39); 
+
+}
+
+void loop() {
+  if (juego){
+  int estadoEjeY=analogRead(A0);
+  Serial.println(puntos);
+  Serial.println(          );
+  //Serial.println("Queso");
+   //Serial.print(queso);
+  //leds[] = CRGB::Purple;
+  
+   estadoEjeY = analogRead(A0);
+  FastLED.clear();
+  leds[ledActual] = CRGB::Purple;
+  leds[ledActual +1] = CRGB::Purple;
+  leds[ledActual -1] = CRGB::Purple;
+  leds[queso] = CRGB::Yellow;
+  FastLED.show();
+  if (estadoEjeY<312) {
+    ledActual--;
+  if (estadoEjeY<312) {
+    delay(100);
+    ledActual--;
+  }
+    
+  }
+  if(estadoEjeY>700){
+    delay(100);
+    ledActual++;
+  }
+  if (estadoEjeY>850){
+  ledActual++;
+  }
+  
+if (ledActual==queso){
+puntos++;
+queso=random(NUM_LEDS)% NUM_LEDS;
+}
+if (ledActual>118){
+    ledActual=118;
+}
+if (ledActual<1){
+  ledActual=1;
+}
+if(tiempo==120){ 
+   FastLED.clear();
+    FastLED.show();
+   
+  juego=false;
+ }
+ tiempo= millis()/1000;
+}
+  
+}
