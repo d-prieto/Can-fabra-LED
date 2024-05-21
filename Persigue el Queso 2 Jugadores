@@ -1,0 +1,119 @@
+#include <LiquidCrystal.h>
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int ledActualP = 1; //led central del jugador purpura
+int ledActualR = 1; //led central del jugador rojo
+bool pAlante = true;
+int estadoEjeYP= analogRead(A0);
+int estadoEjeYR= analogRead(A1);
+int queso = random(1,NUM_LEDS);
+int puntosP = 0;
+int puntosR = 0;
+int minutos = 2;
+int segundos = 0;
+long tiempoMaximo = 120000;
+bool juego =true;
+
+void setup() {
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+   Serial.begin(9600);
+}
+
+void loop() {
+   estadoEjeYP = analogRead(A0);//velocidad del coche purpura
+   estadoEjeYR = analogRead(A1);//velocidad del coche rojo
+  FastLED.clear();
+  if (digitalRead(13) == 1){
+    juego = true;
+  }
+  if (juego){
+  Serial.println("juego es true y estamos aquí");
+  mostrarTiempo();
+  comerQueso();
+  leds[ledActualP] = CRGB::Purple;
+  leds[ledActualP +1] = CRGB::Purple;
+  leds[ledActualP -1] = CRGB::Purple;
+  leds[ledActualR] = CRGB::Red;
+  leds[ledActualR +1] = CRGB::Red;
+  leds[ledActualR -1] = CRGB::Red;
+  leds[queso] = CRGB::Yellow;
+  FastLED.show();
+  Serial.println("estado Eje Y purpura");
+  Serial.print(estadoEjeYP);
+   if (estadoEjeYP<112) {
+    ledActualP=(ledActualP-2);
+    }
+    if (estadoEjeYP<112) {
+    ledActualP=(ledActualP-2);
+    }
+  if (estadoEjeYR<412) {
+    ledActualP--;
+    
+  }
+  else if (estadoEjeYR<600){
+    
+   }
+   else if (estadoEjeYR<860){
+    ledActualR++;
+   }
+   else if(estadoEjeYR>1000) {
+    ledActualP=(ledActualR+2);
+   }
+    if (estadoEjeYR<412) {
+    ledActualR--;
+    
+  }
+  else if (estadoEjeYR<600){
+   }
+   else if (estadoEjeYR<860){
+    ledActualR++;
+   }
+   else if(estadoEjeYR<1000){
+    ledActualR=(ledActualR+2);
+   }
+   if(ledActualP>=118){
+   ledActualP=118;
+   }
+   if(ledActualP<=1){
+    ledActualP=1;
+   }
+   if(ledActualR>=118){
+   ledActualR=118;
+   }
+   if(ledActualR<=1){
+    ledActualR=1;
+  
+   }
+ if(ledActualP>=118){
+   ledActualP=118;
+   }
+   if(ledActualP<=1){
+    ledActualP=1;
+
+
+  }
+   
+   
+  }
+
+}
+
+void mostrarTiempo(){
+  long tiempoActual=millis();
+  if(tiempoActual==tiempoMaximo){
+    juego=false;
+  }
+}
+
+ void comerQueso(){
+   if(ledActualP==queso){
+    puntosP++;
+    queso=random(0,NUM_LEDS);
+   }
+    if(ledActualR==queso){
+    puntosR++;
+    queso=random(0,NUM_LEDS);
+   }
+ }

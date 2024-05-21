@@ -29,21 +29,19 @@ void loop() {
   leds[ledActual -1] = CRGB::Purple;
   leds[queso] = CRGB::Yellow;
   FastLED.show();
-  if (estadoEjeY<312) {
-    ledActual--;
-  if (estadoEjeY<312) {
-    delay(100);
+   if (estadoEjeY<112) {
+    ledActual=(ledActual-2);
+   }
+  else if (estadoEjeY<412) {
     ledActual--;
   }
-    
-  }
-  if(estadoEjeY>700){
-    delay(100);
+  else if (estadoEjeY>612) {
+
     ledActual++;
+  }else if (estadoEjeY>912){
+  ledActual=(ledActual+2);
   }
-  if (estadoEjeY>850){
-  ledActual++;
-  }
+  
   
 if (ledActual==queso){
 puntos++;
@@ -57,4 +55,5 @@ if (ledActual<1){
 }
 }
   
+
  
