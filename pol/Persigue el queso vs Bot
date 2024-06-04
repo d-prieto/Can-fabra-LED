@@ -1,0 +1,113 @@
+#include <LiquidCrystal.h>
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int ledActual = 1; //led central
+bool pAlante = true;
+int estadoEjeY= analogRead(A0);
+int queso = random(1,NUM_LEDS);
+int puntos = 0;
+int minutos = 2;
+int segundos = 0;
+int BOT = random(1,NUM_LEDS);
+long tiempoMaximo = 120000;
+bool juego =false;
+ LiquidCrystal lcd(12,11,5,4,3,2);
+
+void setup() {
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+   lcd.begin(16, 2);
+   Serial.begin(9600);
+   pinMode(7,INPUT_PULLUP);
+   randomSeed(random(1,17));
+}
+
+void loop() {
+  Serial.println(estadoEjeY);
+  //leds[] = CRGB::Purple;
+  
+   estadoEjeY = analogRead(A0);
+  
+  FastLED.clear();
+  if (digitalRead(13) == 1){
+    juego = true;
+  }
+  if (juego){
+  Serial.println("juego es true y estamos aquí");
+  mostrarTiempo();
+  comerQueso();
+  bot();
+  leds[ledActual] = CRGB::Purple;
+  leds[ledActual +1] = CRGB::Purple;
+  leds[ledActual -1] = CRGB::Purple;
+  leds[queso] = CRGB::Yellow;
+  leds[BOT] = CRGB::Red;
+  FastLED.show();
+   if (estadoEjeY<112) {
+    ledActual=(ledActual-2);
+    
+  }
+ else if (estadoEjeY<412) {
+    ledActual--;
+    
+  }
+  else if (estadoEjeY<600){
+   }
+   else if (estadoEjeY<860){
+    ledActual++;
+   }
+   else{
+    ledActual=(ledActual+2);
+   }
+   if(ledActual>=118){
+   ledActual=118;
+   }
+   if(ledActual<=1){
+    ledActual=1;
+   }
+
+   //Puntos
+   if(ledActual==Queso){
+   
+
+   //LCD
+   lcd.setCursor(0,0);
+   lcd.print("Puntos = ");
+   lcd.print(puntos);
+
+
+
+  }
+   
+   
+  }
+
+void mostrarTiempo(){
+  long tiempoActual=millis();
+  lcd.setCursor(1,0);
+  lcd.print("Segundos ");
+  lcd.print(tiempoActual-tiempoMaximo/1000);
+  
+}
+ void comerQueso(){
+   if(ledActual==queso){
+    puntos++;
+    queso=random(0,NUM_LEDS);
+   }
+ }
+
+void bot(){
+  BOT++;
+  if(bot>=NUM_LEDS){
+    BOT= NUM_LEDS;
+    botAtras();
+   } 
+}
+void botAtras(){ 
+  BOT--;
+  if(bot<=0){
+    BOT=0;
+    bot();
+   }
+}
