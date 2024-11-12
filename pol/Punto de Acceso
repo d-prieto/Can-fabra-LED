@@ -1,0 +1,92 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+// Nombre y contraseña del punto de acceso
+const char* ssid = "ESP8266 Router";
+const char* password = "ESP8266";  // Mínimo 8 caracteres
+
+// Configuración del servidor web en el puerto 80
+ESP8266WebServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configura el ESP8266 como punto de acceso
+  Serial.println("Configurando el punto de acceso...");
+  WiFi.softAP(ssid, password);
+
+  // Muestra la dirección IP del punto de acceso
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("Punto de acceso creado. IP: ");
+  Serial.println(IP);
+
+  // Configura la página principal del servidor web
+  server.on("/", handleRoot());
+
+  // Inicia el servidor
+  server.begin();
+  Serial.println("Servidor iniciado");
+}
+
+void loop() {
+  // Mantén el servidor web en funcionamiento
+  server.handleClient();
+}
+
+// Función para manejar la página principal
+void handleRoot() {
+  String html = "<html>\
+                  <head><title>Punto de Acceso ESP8266</title></head>\
+                  <body>\
+                    <h1>¡Bienvenido al ESP8266!</h1>\
+                    <p>Has conectado exitosamente al punto de acceso del ESP8266.</p>\
+                  </body>\
+                </html>";
+  server.send(200, "text/html", html);
+}
+ <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+// Nombre y contraseña del punto de acceso
+const char* ssid = "ESP8266_AP";
+const char* password = "12345678";  // Mínimo 8 caracteres
+
+// Configuración del servidor web en el puerto 80
+ESP8266WebServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configura el ESP8266 como punto de acceso
+  Serial.println("Configurando el punto de acceso...");
+  WiFi.softAP(ssid, password);
+
+  // Muestra la dirección IP del punto de acceso
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("Punto de acceso creado. IP: ");
+  Serial.println(IP);
+
+  // Configura la página principal del servidor web
+  server.on("/", handleRoot());
+
+  // Inicia el servidor
+  server.begin();
+  Serial.println("Servidor iniciado");
+}
+
+void loop() {
+  // Mantén el servidor web en funcionamiento
+  server.handleClient();
+}
+
+// Función para manejar la página principal
+void handleRoot() {
+  String html = "<html>\
+                  <head><title>Punto de Acceso ESP8266</title></head>\
+                  <body>\
+                    <h1>¡Bienvenido al ESP8266!</h1>\
+                    <p>Has conectado exitosamente al punto de acceso del ESP8266.</p>\
+                  </body>\
+                </html>";
+  server.send(200, "text/html", html);
+}
