@@ -1,0 +1,28 @@
+include <FastLED.h>
+#include <DHT.h>
+#define NUM_LEDS 120
+int LED =1;
+int Tira = 0;
+int SENSOR = 2;
+int Temperatura  =22;
+int Humedad = 50;
+DHT. dht (SENSOR, DHT11) ;  //Varable del pin del sensor
+
+void setup() {
+  // put your setup code here, to run once:
+ DHT. begin;
+ FastLED.addLeds<NEOPIXEL, Tira >(leds, NUM_LEDS);  // GRB ordering is assumed
+ Serial.begin(9600);
+
+void loop() {
+  FastLED.clear;
+  Serial.println("Temperatura: ");
+  Serial.print(Temperatura);
+  Serial.println("Humedad: ");
+  Serial.print (Humedad);
+  Serial.print ("%") 
+  for(LED = 1;LED < Temperatura; LED++){
+    leds[LED] = CRGB::Red;
+  }
+  delay(10000);// put your main code here, to run repeatedly
+}
