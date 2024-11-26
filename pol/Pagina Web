@@ -1,0 +1,71 @@
+#include <ESP8266WiFi.h>
+#include <DHT.h>
+
+// Definir el tipo de sensor y el pin
+#define DHTPIN D2
+#define DHTTYPE DHT11  // O DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+
+const char* ssid = "TU_SSID";  // Cambia esto por tu red WiFi
+const char* password = "TU_PASSWORD";  // Cambia esto por tu contraseña WiFi
+
+WiFiServer server(80);  // Crear un servidor web en el puerto 80
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  // Conectar a Wi-Fi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando a WiFi...");
+  }
+  Serial.println("Conectado a la red WiFi");
+
+  // Iniciar el servidor
+  server.begin();
+
+  // Iniciar el sensor DHT
+  dht.begin();
+}
+
+void loop() {
+  // Comprobar si hay un cliente conectado
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+
+  // Esperar a que el cliente envíe algo
+  Serial.println("Nuevo cliente conectado");
+  while (!client.available()) {
+    delay(1);
+  }
+
+  // Leer la temperatura
+  float temp = dht.readTemperature();  // Lee la temperatura en grados Celsius
+  if (isnan(temp)) {
+    Serial.println("Error al leer el sensor DHT");
+    return;
+  }
+
+  // Enviar la cabecera HTTP
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println("Connection: close");
+  client.println();
+
+  // Enviar el contenido HTML con la temperatura
+  client.println("<html>");
+  client.println("<head><title>Temperatura</title></head>");
+  client.println("<body><h1>Temperatura Actual: ");
+  client.print(temp);
+  client.println(" °C</h1></body>");
+  client.println("</html>");
+
+  // Esperar antes de cerrar la conexión
+  delay(1);
+  Serial.println("Cliente desconectado");
+}
