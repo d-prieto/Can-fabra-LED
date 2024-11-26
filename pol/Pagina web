@@ -1,0 +1,79 @@
+#include <DHT.h>
+
+#include <SoftwareSerial.h>
+
+#define DHTPIN 2           // Pin donde está conectado el DHT11
+#define DHTTYPE DHT11      // O DHT22 si usas ese sensor
+
+DHT dht(DHTPIN, DHTTYPE);
+
+SoftwareSerial espSerial(0, 1);  // RX, TX para el ESP8266
+String ssid = "ClubMaker";         // Tu red Wi-Fi
+String password = "CLubMaker"; // Tu contraseña Wi-Fi
+
+void setup() {
+  Serial.begin(9600);        // Iniciar comunicación con el monitor serial
+  espSerial.begin(115200);   // Iniciar comunicación con el ESP8266
+  dht.begin();               // Iniciar sensor DHT
+  
+  // Configurar ESP8266 para conectarse al Wi-Fi
+  esp8266_init();
+  delay(2000);
+}
+
+void loop() {
+  // Leer la temperatura
+  float temp = dht.readTemperature();  // Lee la temperatura en grados Celsius
+  if (isnan(temp)) {
+    Serial.println("Error al leer el sensor DHT");
+    return;
+  }
+
+  // Mostrar la temperatura en el monitor serial
+  Serial.print("Temperatura: ");
+  Serial.print(temp);
+  Serial.println(" °C");
+
+  // Enviar la información de la temperatura al servidor web (ESP8266)
+  send_temperature_to_ESP(temp);
+
+  delay(5000);  // Esperar 5 segundos antes de la siguiente lectura
+}
+
+void esp8266_init() {
+  sendCommand("AT+RST\r\n", 2000);   // Reiniciar ESP8266
+  sendCommand("AT+CWMODE=1\r\n", 2000);  // Modo estación (conectar a Wi-Fi)
+  String connectCommand = "AT+CWJAP=\"";
+  connectCommand += ssid;
+  connectCommand += "\",\"";
+  connectCommand += password;
+  connectCommand += "\"\r\n";
+  sendCommand(connectCommand.c_str(), 5000);  // Conectar a la red Wi-Fi
+  sendCommand("AT+CIPMUX=1\r\n", 2000);   // Habilitar múltiples conexiones
+}
+
+void sendCommand(String command, const int timeout) {
+  String response = "";
+  espSerial.println(command);  // Enviar el comando al ESP8266
+  long int time = millis();
+  while ( (time + timeout) > millis()) {
+    while (espSerial.available()) {
+      char c = espSerial.read();
+      response += c;
+    }
+  }
+  Serial.print(response);  // Imprimir respuesta del ESP8266
+}
+
+void send_temperature_to_ESP(float temperature) {
+  String command = "AT+CIPSTART=0,\"TCP\",\"192.168.1.100\",80\r\n";  // IP de tu servidor web
+  sendCommand(command, 2000);
+  
+  String httpRequest = "GET /update?temp=" + String(temperature) + " HTTP/1.1\r\n";
+  httpRequest += "Host: 192.168.1.100\r\n";  // Cambia esto por la IP de tu servidor
+  httpRequest += "Connection: close\r\n\r\n";
+  
+  sendCommand("AT+CIPSEND=0," + String(httpRequest.length()) + "\r\n", 2000);  // Enviar longitud de datos
+  sendCommand(httpRequest, 2000);  // Enviar datos
+  sendCommand("AT+CIPCLOSE=0\r\n", 2000);  // Cerrar la conexión
+}
