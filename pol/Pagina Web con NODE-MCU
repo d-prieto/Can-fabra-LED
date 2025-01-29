@@ -1,0 +1,110 @@
+
+#include <DHT.h>
+
+#include <SoftwareSerial.h>
+
+//#define DHTPIN 2           // Pin donde está conectado el DHT11
+//#define DHTTYPE DHT11      // O DHT22 si usas ese sensor
+
+//DHT dht(DHTPIN, DHTTYPE);
+
+const char* ssid = "ClubMaker";         // Tu red Wi-Fi
+const char* password = "ClubM@ker"; // Tu contraseña Wi-Fi
+
+#include <ESP8266WiFi.h>
+#include <DHT.h>
+
+// Definimos el tipo de sensor y el pin al que está conectado
+#define DHTPIN D4         // Pin donde está el sensor de temperatura
+#define DHTTYPE DHT11     // O DHT22 para el DHT22
+DHT dht(DHTPIN, DHTTYPE);  // Inicializa el sensor DHT
+
+// Configuración de la red WiFi
+//const char* ssid = "TU_SSID";          // Reemplaza con el nombre de tu red WiFi
+//const char* password = "TU_PASSWORD";  // Reemplaza con la contraseña de tu red WiFi
+
+WiFiServer server(80);  // Servidor web en el puerto 80
+
+void setup() {
+  // Inicia la comunicación serial
+  Serial.begin(115200);
+  delay(10);
+Serial.println("Hola");
+  // Conéctate a la red WiFi
+  Serial.println();
+  Serial.println();
+  Serial.print("Conectando a WiFi...");
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.print(".");
+  }
+  
+  Serial.println("Conectado");
+  Serial.print("IP del dispositivo: ");
+  Serial.println(WiFi.localIP());  // Imprime la IP asignada al NodeMCU
+  
+  server.begin();  // Comienza el servidor web
+  dht.begin();  // Inicializa el sensor DHT
+}
+
+void loop() {
+  WiFiClient client = server.available();  // Espera a que un cliente se conecte
+  
+  if (client) {
+    String currentLine = "";  // Línea que se construirá con la solicitud HTTP del cliente
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();  // Lee un byte
+        Serial.write(c);  // Escribe el byte en el monitor serial
+        
+        // Si llega una nueva línea (fin de la solicitud HTTP)
+        if (c == '\n') {
+          // Si la línea está vacía, significa que el cliente ha terminado la solicitud
+          if (currentLine.length() == 0) {
+            // Obtén la temperatura del sensor
+            float t = dht.readTemperature();  // Lee la temperatura en grados Celsius
+            float h = dht.readHumidity();     // Lee la humedad
+            
+            // Si la lectura de temperatura es válida, envía la respuesta
+            if (isnan(t) || isnan(h)) {
+              Serial.println("Error al leer del sensor DHT!");
+              return;
+            }
+
+            // Enviar la cabecera HTTP
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: text/html");
+            client.println("Connection: close");
+            client.println();
+
+            // Enviar la página HTML
+            client.println("<!DOCTYPE HTML>");
+            client.println("<html>");
+            client.println("<head><title>Temperatura y Humedad</title></head>");
+            client.println("<body>");
+            client.println("<h1>Lectura de Sensor DHT</h1>");
+            client.print("<p>Temperatura: ");
+            client.print(t);
+            client.println(" &deg;C</p>");
+            client.print("<p>Humedad: ");
+            client.print(h);
+            client.println(" %</p>");
+            client.println("<p>Actualización en tiempo real cada 2 segundos.</p>");
+            client.println("</body>");
+            client.println("</html>");
+            break;
+          } else {
+            // Si la línea no está vacía, continúa leyendo
+            currentLine = "";
+          }
+        } else if (c != '\r') {
+          currentLine += c;  // Añade el carácter al buffer de la línea
+        }
+      }
+    }
+    client.stop();  // Cierra la conexión
+    Serial.println("Cliente desconectado");
+  }
+}
