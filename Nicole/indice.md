@@ -7,6 +7,8 @@ Enlace a Luis Llamas
 https://www.luisllamas.es/arduino-teclado-matricial/
 
 Lo que llevo de código 4/2/25:
+
+
 #include <Keypad.h>
  
 const byte rowsCount = 4;
