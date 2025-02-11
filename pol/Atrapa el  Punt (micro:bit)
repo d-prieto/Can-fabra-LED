@@ -1,0 +1,20 @@
+def on_button_pressed_a():
+    if Sprite.get(LedSpriteProperty.X) == 2:
+        game.add_score(1)
+    else:
+        game.game_over()
+input.on_button_pressed(Button.A, on_button_pressed_a)
+
+Sprite: game.LedSprite = None
+Sprite = game.create_sprite(0, 0)
+
+def on_forever():
+    Sprite.move(1)
+    Sprite.if_on_edge_bounce()
+    if game.score() <= 5:
+        basic.pause(500)
+    elif game.score() <= 10:
+        basic.pause(200)
+    else:
+        pass
+basic.forever(on_forever)
