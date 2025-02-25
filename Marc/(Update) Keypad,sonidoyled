@@ -1,18 +1,14 @@
 #include <FastLED.h>
 #include "pitches.h"
 #include <Keypad.h>
-#define NUM_LEDS 180
+#define NUM_LEDS 179
 #define DATA_PIN 13
 
 CRGB leds[NUM_LEDS];
-int melody[] = {
-  NOTE_C5};
+
 int duration = 100;  // 500 miliseconds
 int fullmelody[]={
   NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6
-};
-int megalo[]={
-  NOTE_D5, NOTE_D5, NOTE_D6, NOTE_A5
 };
 
 const byte ROWS = 4; //four rows
@@ -26,23 +22,19 @@ char hexaKeys[ROWS][COLS] = {
 };
 byte rowPins[ROWS] = {11, 10, 9, 8}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {7, 6, 5, 4}; //connect to the column pinouts of the keypad
-
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
-
 void setup(){
   Serial.begin(9600);
-
   
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-  FastLED.setBrightness(20);
+  FastLED.setBrightness(60);
   leds[0] = CRGB::Red;
       FastLED.show();
   delay(1000);
        leds[0] = CRGB::Black;
       FastLED.show();
 }
-
 void encenderLucesYSonido(int luzInicial, int luzFinal, int nota, CRGB color){
       tone(12, nota, duration*0.9);
       for (int i=luzInicial; i< luzFinal -1; i++) {
@@ -51,93 +43,59 @@ void encenderLucesYSonido(int luzInicial, int luzFinal, int nota, CRGB color){
       FastLED.show();
       delay(duration);
 }
-  
-void loop(){
-  char customKey = customKeypad.getKey();
-  
-  if (customKey){
-    Serial.println(customKey);
-    if(customKey=='1'){
+
+void tocarNota(char customKey) {
+      if(customKey=='1'){
       encenderLucesYSonido(87,92, NOTE_C4, CRGB::Indigo);
-      } 
-      }
-  if(customKey=='2') {
+    } 
+    if(customKey=='2') {
       encenderLucesYSonido(84,95, NOTE_D4, CRGB::Amethyst);
-      }
+    }
     if(customKey=='3') {
       encenderLucesYSonido(81,99, NOTE_E4, CRGB::DarkBlue);
     }
-
     if(customKey=='4') {
       encenderLucesYSonido(75,105, NOTE_F4, CRGB::DodgerBlue);
     }
-
     if(customKey=='5') {
       encenderLucesYSonido(60,120, NOTE_G4, CRGB::DarkTurquoise);
     }
-
- 
     if(customKey=='6') {
       encenderLucesYSonido(46,134, NOTE_A4, CRGB::Green);
     }
-
     if(customKey=='7') {
       encenderLucesYSonido(33,147, NOTE_B4, CRGB::LawnGreen);
     }
-    
-
     if(customKey=='8') {
       encenderLucesYSonido(21,159, NOTE_C5, CRGB::Yellow);
     }
-
     if(customKey=='9') {
       encenderLucesYSonido(10,170, NOTE_D5, CRGB::Orange);
     }
-
     if(customKey=='0') {
-      encenderLucesYSonido(0,180, NOTE_E5, CRGB::Red);
+      encenderLucesYSonido(0,179, NOTE_E5, CRGB::Red);
     }
 
+  } 
 
-
-
-
-    
-
-      
-
-
-
-    /*
-      tone(12, NOTE_D4, duration);
-      leds[84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 95] = CRGB::Magenta;
-      FastLED.show();
-    if(customKey=='3')
-      tone(12, NOTE_E4, duration);
-      leds[79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 95, 96, 97, 98, 99] = CRGB::Blue;
-      FastLED.show();
-    if(customKey=='4')
-      tone(12, NOTE_F4, duration);
-    if(customKey=='5')
-      tone(12, NOTE_G4, duration);
-    if(customKey=='6')
-      tone(12, NOTE_A4, duration);
-    if(customKey=='7')
-      tone(12, NOTE_B4, duration);
-    if(customKey=='8')
-      tone(12, NOTE_C5, duration);
-    if(customKey=='9')
-      tone(12, NOTE_D5, duration);
-    if(customKey=='0')
-      tone(12, NOTE_E5, duration);
-    */
   
   
-  else{
+
+  
+void loop(){
+  char customKey = customKeypad.getKey();
+  if (customKey){
+    Serial.println(customKey);
+
+    tocarNota(customKey);
+  }
+    else{
     noTone(12);
      for (int i=0; i< NUM_LEDS ; i++) {
         leds[i] = CRGB::Black;
       } 
       FastLED.show();
-  }
-}
+    }
+  }//end del loop
+
+
