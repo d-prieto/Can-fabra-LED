@@ -1,0 +1,30 @@
+int botones[7] = {2,3,4,5,6,7,8};
+int estadosActuales[7] = {0,0,0,0,0,0,0};
+int estadosAnteriores[7] = {0,0,0,0,0,0,0};
+int notas[7] = {264, 297, 330, 352, 396, 440, 495};
+
+void setup() {
+  Serial.begin(9600);
+  for(int indice = 0; indice <7; indice ++) {
+     pinMode(botones[indice], INPUT);
+  }
+}
+
+void tocarNota(int nota){
+  tone(11, nota, 200);
+  delay(200);
+  noTone(11);
+  delay(500);
+}
+
+
+void loop() {
+ for(int indice = 0; indice <7; indice ++) {
+  estadosActuales[indice] = digitalRead(botones[indice]);
+    if (estadosActuales[indice] == HIGH && estadosActuales[indice] != estadosAnteriores[indice]) {
+      tocarNota(notas[indice]);
+    }
+  estadosAnteriores[indice] = estadosActuales[indice];
+ }
+
+}
