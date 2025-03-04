@@ -1,0 +1,169 @@
+#include <FastLED.h>
+#include "pitches.h"
+#include <Keypad.h>
+#include "tocarMelodia.h"
+#define NUM_LEDS 179
+#define DATA_PIN 13
+
+CRGB leds[NUM_LEDS];
+
+int duration = 100;  // 500 miliseconds
+int fullmelody[]={
+  NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6
+};
+
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //four columns
+//define the cymbols on the buttons of the keypads
+char hexaKeys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+byte rowPins[ROWS] = {11, 10, 9, 8}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {7, 6, 5, 4}; //connect to the column pinouts of the keypad
+//initialize an instance of class NewKeypad
+Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
+void setup(){
+  Serial.begin(9600);
+  
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  FastLED.setBrightness(60);
+  leds[0] = CRGB::Red;
+      FastLED.show();
+  delay(1000);
+       leds[0] = CRGB::Black;
+      FastLED.show();
+}
+
+void encenderLucesYSonido(int luzInicial, int luzFinal, int nota, CRGB color){
+      tone(12, nota, duration*0.9);
+      for (int i=luzInicial; i< luzFinal -1; i++) {
+        leds[i] = color;
+      } 
+      FastLED.show();
+      delay(duration);
+}
+  
+void loop(){
+  char customKey = customKeypad.getKey();
+  if (customKey){
+    Serial.println(customKey);
+    if(customKey=='1'){
+      encenderLucesYSonido(87,92, NOTE_C4, CRGB::Indigo);
+    } 
+    if(customKey=='2') {
+      encenderLucesYSonido(84,95, NOTE_D4, CRGB::Amethyst);
+    }
+    if(customKey=='3') {
+      encenderLucesYSonido(81,99, NOTE_E4, CRGB::DarkBlue);
+    }
+    if(customKey=='4') {
+      encenderLucesYSonido(75,105, NOTE_F4, CRGB::DodgerBlue);
+    }
+    if(customKey=='5') {
+      encenderLucesYSonido(60,120, NOTE_G4, CRGB::DarkTurquoise);
+    }
+    if(customKey=='6') {
+      encenderLucesYSonido(46,134, NOTE_A4, CRGB::Green);
+    }
+    if(customKey=='7') {
+      encenderLucesYSonido(33,147, NOTE_B4, CRGB::LawnGreen);
+    }
+    if(customKey=='8') {
+      encenderLucesYSonido(21,159, NOTE_C5, CRGB::Yellow);
+    }
+    if(customKey=='9') {
+      encenderLucesYSonido(10,170, NOTE_D5, CRGB::Orange);
+    }
+    if(customKey=='0') {
+      encenderLucesYSonido(0,179, NOTE_E5, CRGB::Red);
+    }
+
+    if(customKey=='A') {
+      tocarMelodia();
+    }
+
+  } //end if del largo
+    else{
+    noTone(12);
+     for (int i=0; i< NUM_LEDS ; i++) {
+        leds[i] = CRGB::Black;
+      } 
+      FastLED.show();
+  }
+  
+  }//end del loop
+
+
+TOCAR MELODIA
+
+
+// change this to make the song slower or faster
+int tempo = 200;
+
+// change this to whichever pin you want to use
+int buzzer = 12;
+
+
+// notes of the moledy followed by the duration.
+// a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+// !!negative numbers are used to represent dotted notes,
+// so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+int melody[] = {
+
+  // Super Mario Bros theme
+  // Score available at https://musescore.com/user/2123/scores/2145
+  // Theme by Koji Kondo
+  
+  
+  NOTE_E5,8, NOTE_E5,8, REST,8, NOTE_E5,8, REST,8, NOTE_C5,8, NOTE_E5,8, //1
+  NOTE_G5,4, REST,4, NOTE_G4,8, REST,4, 
+  NOTE_C5,-4, NOTE_G4,8, REST,4, NOTE_E4,-4, // 3
+  NOTE_A4,4, NOTE_B4,4, NOTE_AS4,8, NOTE_A4,4,
+  NOTE_G4,-8, NOTE_E5,-8, NOTE_G5,-8, NOTE_A5,4, NOTE_F5,8, NOTE_G5,8,
+  REST,8, NOTE_E5,4,NOTE_C5,8, NOTE_D5,8, NOTE_B4,-4,
+  NOTE_C5,-4, NOTE_G4,8, REST,4, NOTE_E4,-4, // repeats from 3
+  NOTE_A4,4, NOTE_B4,4, NOTE_AS4,8, NOTE_A4,4,
+  NOTE_G4,-8, NOTE_E5,-8, NOTE_G5,-8, NOTE_A5,4, NOTE_F5,8, NOTE_G5,8,
+  REST,8, NOTE_E5,4,NOTE_C5,8, NOTE_D5,8, NOTE_B4,-4,
+  
+
+};
+
+// sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+// there are two values per note (pitch and duration), so for each note there are four bytes
+int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+// this calculates the duration of a whole note in ms
+int wholenote = (60000 * 4) / tempo;
+
+int divider = 0, noteDuration = 0;
+
+void tocarMelodia() {
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(buzzer, melody[thisNote], noteDuration * 0.9);
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+
+    // stop the waveform generation before the next note.
+    noTone(buzzer);
+  }
+}
