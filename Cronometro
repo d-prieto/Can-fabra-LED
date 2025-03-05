@@ -1,0 +1,47 @@
+#include <Wire.h>
+
+
+#define DISPLAY_ADDRESS1 0x71 //This is the default address of the OpenSegment with both solder jumpers open
+
+int cycles = 0;
+
+void setup() 
+{
+  Wire.begin(); //Join the bus as master
+
+  //By default .begin() will set I2C SCL to Standard Speed mode of 100kHz
+  //Wire.setClock(400000); //Optional - set I2C SCL to High Speed Mode of 400kHz
+
+  Serial.begin(9600); //Start serial communication at 9600 for debug statements
+  Serial.println("OpenSegment Example Code");
+
+  //Send the reset command to the display - this forces the cursor to return to the beginning of the display
+  Wire.beginTransmission(DISPLAY_ADDRESS1);
+  Wire.write('v');
+  Wire.endTransmission();
+}
+
+void loop() 
+{
+  cycles++; //Counting cycles! Yay!
+  Serial.print("Cycle: ");
+  Serial.println(cycles);
+  
+  i2cSendValue(cycles); //Send the four characters to the display
+  
+  delay(1); //If we remove the slow debug statements, we need a very small delay to prevent flickering
+}
+
+//Given a number, i2cSendValue chops up an integer into four values and sends them out over I2C
+void i2cSendValue(int tempCycles)
+{
+  Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
+  Wire.write(tempCycles / 1000); //Send the left most digit
+  tempCycles %= 1000; //Now remove the left most digit from the number we want to display
+  Wire.write(tempCycles / 100);
+  tempCycles %= 100;
+  Wire.write(tempCycles / 10);
+  tempCycles %= 10;
+  Wire.write(tempCycles); //Send the right most digit
+  Wire.endTransmission(); //Stop I2C transmission
+}
