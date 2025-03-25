@@ -1,12 +1,6 @@
-
 #include "pitches.h"
 #include "iluminacionMelodia.h"
-#include "melodia.h"
-#include "melodia2.h"
-#include "melodia3.h"
-#include "melodia4.h"
-#include "melodia5.h"
-#include "melodia6.h"
+#include "melodia_DEMO_.h"
 #include <Keypad.h>
 
 
@@ -118,6 +112,8 @@ void loop(){
   
   }//end del loop
 
+
+
 ______________________________________________________________________________
 NUEVO ARCHIVO (IluminacionMelodia.h)
 
@@ -136,14 +132,16 @@ void iluminarMelodia( int frecuencia) {
   }
   for (int i = 0; i < numeroDeLedsAIluminar; i++) {
     leds [(NUM_LEDS/2) -i] = CRGB::Red;
+    leds [(NUM_LEDS/2) -i].setHue(map(frecuencia, 0, 1200, 0, 230));
     leds [(NUM_LEDS/2) +i] = CRGB::Red;
+    leds [(NUM_LEDS/2) +i].setHue(map(frecuencia, 0, 1200, 0, 230));
   }
   FastLED.show();
   
 }
 
 ______________________________________________________________________________
-NUEVO ARCHIVO (melodia(DEMO).h)
+NUEVO ARCHIVO (melodia_DEMO_.h)
 #include "pitches.h"
 
 // change this to make the song slower or faster
@@ -480,6 +478,7 @@ void melodia6() {
     noTone(buzzer);
   }
 }
+
 ______________________________________________________________________________
 NUEVO ARCHIVO (pitches.h)
 
