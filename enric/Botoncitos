@@ -1,0 +1,10 @@
+void setup() {
+  pinMode (3, INPUT);
+  Serial.begin (9600);
+  
+}
+
+void loop() {
+  int valorBoton = digitalRead(3);
+  Serial.println(valorBoton);
+}
