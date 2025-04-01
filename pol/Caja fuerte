@@ -1,0 +1,67 @@
+include <Wire.h>
+
+
+#define DISPLAY_ADDRESS1 0x71 //This is the default address of the OpenSegment with both solder jumpers open
+
+)
+int digitos[4] = {0,0,0,0};
+int EjeY = A0;
+int EjeX = A1;
+long tiempoActual = 0;
+long tiempoAnterior = 0;
+void setup() 
+{
+ 
+  Wire.begin(); //Join the bus as master
+
+  //By default .begin() will set I2C SCL to Standard Speed mode of 100kHz
+  //Wire.setClock(400000); //Optional - set I2C SCL to High Speed Mode of 400kHz
+
+  Serial.begin(9600); //Start serial communication at 9600 for debug statements
+  Serial.println("OpenSegment Example Code");
+
+  //Send the reset command to the display - this forces the cursor to return to the beginning of the display
+  Wire.beginTransmission(DISPLAY_ADDRESS1);
+  Wire.write('v');
+  Wire.endTransmission();
+}
+
+void loop() { 
+  
+  EjeX = analogRead(A1);
+  Eje Y = analogRead(A2);
+
+if(EjeX>300){
+digitos[cifra]--;}
+
+if(EjeX>700){
+  if(cifra ==3)
+digitos[cifra]++;
+}
+if(EjeY<300){ 
+  if(digitos[cifra] == 1){}
+  else{
+  cifra--;
+}}
+if(EjeY>700){
+  if(digitos[cifra] == 9){}
+  else{
+  cifra++;
+}}
+  
+  i2cSendValue(); //Send the four characters to the display
+  
+ 
+
+
+//Given a number, i2cSendValue chops up an integer into four values and sends them out over I2C
+void i2cSendValue()
+
+  Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
+  Wire.write(digitos[0]); //Send the left most digit
+  Wire.write(digitos[1];
+  Wire.write(digitos[2]);
+  Wire.write(digitos[3]);
+  
+  Wire.endTransmission(); //Stop I2C transmission
+}
