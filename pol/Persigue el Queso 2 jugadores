@@ -74,6 +74,13 @@ if (ledActualR<1){
   ledActualR=1;
 }
 MostrarPuntos();
+if (queso == 0){
+queso++;
+}
+if (queso == NUM_LEDS){
+queso--;
+}
+
 }
   
   
