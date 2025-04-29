@@ -1,0 +1,141 @@
+#include <LiquidCrystal.h>
+
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int ledActualP= 1; //led central
+int ledActualR= 1; //led central
+int queso = random(NUM_LEDS)% NUM_LEDS;
+int puntosP = 0;
+int puntosR = 0;
+bool pAlante = true;
+
+void setup() {
+   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+   Serial.begin(9600);
+    randomSeed(39); 
+     lcd.begin(16, 2);
+
+}
+
+void loop() {
+  int estadoEjeYP=analogRead(A0);
+  int estadoEjeYR=analogRead(A2);
+  Serial.println(  "Puntos purpurpura");
+  Serial.println(puntosP);
+  Serial.println("Joystk Rojo");
+  Serial.print (estadoEjeYR);
+  //Serial.println("Queso");
+  
+  FastLED.clear();
+  leds[ledActualP] = CRGB::Purple;
+  leds[ledActualP +1] = CRGB::Purple;
+  leds[ledActualP -1] = CRGB::Purple;
+   leds[ledActualR] = CRGB::Red;
+  leds[ledActualR +1] = CRGB::Red;
+  leds[ledActualR -1] = CRGB::Red;
+  leds[queso] = CRGB::Yellow;
+  FastLED.show();
+   if (estadoEjeYP<212) {
+    ledActualP--;
+   }
+ if (estadoEjeYP<412) {
+    ledActualP--;
+  }
+  if (estadoEjeYP>612) {
+
+    ledActualP++;
+  }
+  if (estadoEjeYP>812){
+  ledActualP++;
+  }
+  if (estadoEjeYR<212) {
+    ledActualR--;
+   }
+  if (estadoEjeYR<412) {
+    ledActualR--;
+  }
+  else if (estadoEjeYR>612) {
+
+    ledActualR++;
+  }else if (estadoEjeYR>812){
+  ledActualR++;
+  }
+  
+ 
+if (ledActualP>118){
+    ledActualP=118;
+}
+
+if (ledActualP<1){
+  ledActualP=1;
+}
+if (ledActualR>118){
+    ledActualR=118;
+}
+
+if (ledActualR<1){
+  ledActualR=1;
+}
+MostrarPuntos();
+if (queso == 0){
+queso++;
+}
+if (queso == NUM_LEDS){
+queso--;
+}
+
+}
+  
+  
+  void MostrarPuntos(){
+     
+if (ledActualP==queso){
+puntosP++;
+FastLED.clear();
+delay(100);
+for(int a = 0; a < puntosP; a++){
+  Serial.println("pase por el for");
+leds[a] = CRGB::Purple;}
+for(int b = NUM_LEDS - 1;b > NUM_LEDS-1-puntosR; b--){
+  Serial.println("pase por el for");
+  leds[b] = CRGB::Red;
+  delay(50);
+}
+delay(50);
+FastLED.show();
+delay(2000);
+queso=random(NUM_LEDS)% NUM_LEDS;
+}
+
+if (ledActualR==queso){
+puntosR++;
+Pantlla LCD ();
+for(int b = NUM_LEDS - 1;b > NUM_LEDS-1-puntosR; b--){
+  Serial.println("pase por el for");
+  leds[b] = CRGB::Red;
+  delay(50);
+}
+for(int a = 0; a < puntosP; a++){
+  Serial.println("pase por el for");
+leds[a] = CRGB::Purple;}
+FastLED.show();
+
+delay(2000);
+queso=random(NUM_LEDS)% NUM_LEDS;
+}
+  }
+
+void Pantlla LCD (){
+  
+    lcd.setCursor(0, 0);
+    lcd.print("Rojo=");
+    lcd.print(puntosR);
+    lcd.setCursor(0, );
+    lcd.print("Purp=");
+    lcd.print(PuntsP);
+}      
+
+
+ 
