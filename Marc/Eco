@@ -1,0 +1,12 @@
+void setup() 
+{ Serial.begin (9600);
+
+}
+
+void loop() { 
+  if (Serial.available()) { 
+    String mensaje = Serial.readString(); 
+   Serial.print(mensaje, array (mensaje, HEX)); 
+   
+   
+}
