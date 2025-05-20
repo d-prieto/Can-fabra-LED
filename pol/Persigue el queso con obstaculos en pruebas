@@ -2,6 +2,7 @@
 #include <FastLED.h>
 #define NUM_LEDS 120
 #define DATA_PIN 8
+#define BUTTON_PIN 7
 CRGB leds[NUM_LEDS];
 int ledActual = 1; //led central
 bool pAlante = true;
@@ -20,7 +21,7 @@ void setup() {
    FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
    lcd.begin(16, 2);
    Serial.begin(9600);
-   pinMode(7,INPUT_PULLUP);
+   pinMode(BUTTON_PIN,INPUT_PULLUP);
 }
 
 void loop() {
@@ -35,8 +36,10 @@ void loop() {
   comerQueso();
   obstaculos();
   if (obstaculo==false){
-    moverConJoystick
-  }
+     moverConJoystik();
+  }else{
+    moverConBoton();
+    }
   leds[ledActual] = CRGB::Purple;
   leds[ledActual +1] = CRGB::Purple;
   leds[ledActual -1] = CRGB::Purple;
@@ -122,13 +125,29 @@ void moverConJoystik(){
    if (estadoEjeY<660){
     ledActual++;
    }
-   if(estadoEjeY<860{
+   if(estadoEjeY<860){
     ledActual++;
    }
 }
 
 
-void moverConboton(){
+void moverConBoton(){
+
+  bool estadoBoton=BUTTON_PIN;
+  bool estadoBotonanterior = false;
+
+if(estadoBoton==true){
+  estadoBotonanterior=true;
+}else{
+estadoBotonanterior=false;  
+}
+if(estadoBotonanterior==true){
+  
+ ledActual=(ledActual+3);
+}
+  
+  
+
   
   
 }
