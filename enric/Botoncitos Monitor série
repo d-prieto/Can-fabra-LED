@@ -1,0 +1,22 @@
+void setup() {
+  pinMode (3, INPUT);
+  pinMode (4, INPUT);
+  pinMode (2, INPUT);
+  Serial.begin (9600);
+  
+}
+
+void loop() {
+  if(!digitalRead(2)){
+    Serial.println("boton 1 clicado");
+    while(!digitalRead(2)){}
+  }
+  if(!digitalRead(3)){
+    Serial.println("boton 2 clicado");
+    while(!digitalRead(3)){}
+  }
+  if(!digitalRead(4)){
+    Serial.println("boton 3 clicado");
+    while(!digitalRead(4)){}
+  }
+}
