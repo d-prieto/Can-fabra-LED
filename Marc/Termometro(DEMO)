@@ -1,22 +1,39 @@
 #include "DHT.h"
 #include <FastLED.h>
 
+
 #define NUM_LEDS 179
 #define DHTPIN 7
 #define DATA_PIN 13
+
+CRGB leds[NUM_LEDS];
 
 
 #define DHTTYPE DHT11   // DHT 11
 
 DHT dht(DHTPIN, DHTTYPE);
 
+
+#include "IluminacionTermometro.h"
+
 void setup() {
   Serial.begin(9600);
+
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  FastLED.setBrightness(60);
+  leds[0] = CRGB::Red;
+      FastLED.show();
+  delay(1000);
+       leds[0] = CRGB::Black;
+      FastLED.show();
+      
   Serial.println(F("DHTxx test!"));
 
   dht.begin();
+
 }
 
+      
 void loop() {
   delay(2000);
 
@@ -41,6 +58,7 @@ void loop() {
   Serial.print(h);
   Serial.print(F("%  Temperature: "));
   Serial.print(t);
+  iluminarTermometro(t);
   Serial.print(F("°C "));
   Serial.print(f);
   Serial.print(F("°F  Heat index: "));
@@ -48,8 +66,22 @@ void loop() {
   Serial.print(F("°C "));
   Serial.print(hif);
   Serial.println(F("°F"));
+  //int numeroDeLedsAIluminar;
+  //FastLED.show();
 }
 
+
+//void encenderluces(int temperatura) {
+        //for (int i=0; i< temperatura -1; i++)
+      //FastLED.show();
+//}
+
+
+void encenderLuces(int luzFinal){
+      for (int i=0; i< luzFinal -1; i++)
+      leds [NUM_LEDS] = CRGB::Red;
+      FastLED.show(); 
+}
 __________________________________________________________________________________
 NUEVO ARCHIVO (IluminacionTermometro.h)
 
@@ -60,14 +92,19 @@ NUEVO ARCHIVO (IluminacionTermometro.h)
 #define DHTPIN 7
 #define DATA_PIN 13
 
-void iluminarTermometro( int temperatura) {
- 
-  int numeroDeLedsAIluminar = map (temperatura, 0, 50, 0, NUM_LEDS);
+void iluminarTermometro( float temperatura) {
+
+  float numeroDeLedsAIluminar = map (temperatura, 20.0, 30.0, 0, NUM_LEDS*100)/100.0;
+  Serial.println();
+  Serial.println(numeroDeLedsAIluminar);
+  
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CRGB::Black;
   }
-  for (int i = 0; i < numeroDeLedsAIluminar; i++) {
-    leds [NUM_LEDS] = CRGB::Red;
-    leds [NUM_LEDS].setHue(map(temperatura, 0, 50, 0, NUM_LEDS));
+  for (int i = 0; i < round(numeroDeLedsAIluminar); i++) {
+    //leds [i] = CRGB::Red;
+    leds [i].setHue(map(temperatura, 20.0, 30.0, 0,255));
   }
   FastLED.show();
+
+}
