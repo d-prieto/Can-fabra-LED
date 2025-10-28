@@ -1,0 +1,105 @@
+#include <FastLED.h>
+#define NUM_LEDS 120
+#define DATA_PIN 8
+CRGB leds[NUM_LEDS];
+int queso = random(3,NUM_LEDS);
+int ledActual = 1; //led central
+int obstaculo[4]= {34,10,70,55};
+int puntos = 0;
+int estadoEjeY= analogRead(A0);
+long tiempoMaximo = 120000;
+long tiempoActual = 0;
+
+void revisarSensores(){
+  
+   if (estadoEjeY<112) {
+    ledActual=(ledActual-2); 
+  }
+ else if (estadoEjeY<412) {
+    ledActual--;
+    
+  }
+  else if (estadoEjeY<600){
+   }
+   else if (estadoEjeY<860){
+    ledActual++;
+   }
+   else{
+    ledActual=(ledActual+2);
+   }
+   }
+
+void mostrarPuntos(){
+   FastLED.clear();
+  for(int b=0;b=puntos--;b++){
+  leds[b] = CRGB::Yellow;
+  }
+  FastLED.show();  
+}
+
+void FDJ(){
+
+  FastLED.clear();
+  for(int a=0;a=NUM_LEDS;a++){
+  leds[a] = CRGB::Red;
+   FastLED.show();
+  }
+  delay(3000);
+  mostrarPuntos();
+  digitalWrite(13, HIGH);
+}
+
+
+void logica(){
+
+  if(ledActual==queso){
+    puntos++;
+    queso=random(0,NUM_LEDS);
+   }
+
+   for(int i=0;i=3;i++){
+    if(obstaculo[i]==ledActual){
+      FDJ();
+    }
+  }
+}
+
+void encenderLeds(){
+
+  leds[ledActual] = CRGB::Purple;
+  leds[ledActual +1] = CRGB::Purple;
+  leds[ledActual -1] = CRGB::Purple;
+  leds[queso] = CRGB::Yellow;
+  leds[obstaculo[0]] = CRGB::Red;
+  leds[obstaculo[1]] = CRGB::Red;
+  leds[obstaculo[2]] = CRGB::Red;
+  leds[obstaculo[3]] = CRGB::Red;
+  FastLED.show();
+}
+
+
+
+void temporizador(){
+ tiempoActual = millis();
+  if ((tiempoActual-tiempoMaximo)==0){
+    FDJ();
+   }
+}
+
+
+
+  
+void setup() {
+  // put your setup code here, to run once:
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  revisarSensores();
+  logica();
+  encenderLeds();
+}
+
+
