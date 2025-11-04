@@ -7,29 +7,55 @@ int ledActual = 1; //led central
 int obstaculo[4]= {34,10,70,55};
 int puntos = 0;
 int estadoEjeY= analogRead(A0);
+int estadoBoton= digitalRead(13);
+bool estadoBotonAnterior= LOW;
 long tiempoMaximo = 120000;
 long tiempoActual = 0;
 
 void revisarSensores(){
-  
+ 
+  Serial.println("En revisarSensores");
+  estadoBoton= digitalRead(13);
+  estadoEjeY=analogRead(A0);
    if (estadoEjeY<112) {
-    ledActual=(ledActual-2); 
+     if(estadoBoton==HIGH)and(estadoBotonAnterior){
+      ledActual(ledActual-5);
+    }else{ 
+    ledActual=(ledActual-2); }
   }
  else if (estadoEjeY<412) {
-    ledActual--;
-    
+   
+    if(estadoBoton==HIGH)and(estadoBotonAnterior==LOW){
+      ledActual(ledActual-3);
+    }else{ 
+      ledActual--;
+    }
+   
+   
+   }else{
   }
   else if (estadoEjeY<600){
    }
    else if (estadoEjeY<860){
+   
+    if(estadoBoton==HIGH)and(estadoBotonAnterior==LOW){
+    ledActual=(ledActual+3);
+   }else{
     ledActual++;
    }
-   else{
+   }else{ 
+
+    if(estadoBoton==HIGH)and(estadoBotonAnterior=LOW){
+     ledActual=(ledActual+5);
+   }else{
     ledActual=(ledActual+2);
    }
    }
+   
+    estadoBoton=estadoBotonAnterior;
 
 void mostrarPuntos(){
+  Serial.println("en mostrar puntos");
    FastLED.clear();
   for(int b=0;b=puntos--;b++){
   leds[b] = CRGB::Yellow;
@@ -38,7 +64,7 @@ void mostrarPuntos(){
 }
 
 void FDJ(){
-
+Serial.println("En FDJ");
   FastLED.clear();
   for(int a=0;a=NUM_LEDS;a++){
   leds[a] = CRGB::Red;
@@ -46,26 +72,27 @@ void FDJ(){
   }
   delay(3000);
   mostrarPuntos();
-  digitalWrite(13, HIGH);
+  digitalWrite(12, HIGH);
 }
 
 
 void logica(){
-
+Serial.println("En logica");
   if(ledActual==queso){
     puntos++;
     queso=random(0,NUM_LEDS);
    }
 
-   for(int i=0;i=3;i++){
+  /* for(int i=0;i=3;i++){
     if(obstaculo[i]==ledActual){
       FDJ();
     }
-  }
+  }*/
 }
 
 void encenderLeds(){
-
+  Serial.println("En encenderleds");
+  FastLED.clear();
   leds[ledActual] = CRGB::Purple;
   leds[ledActual +1] = CRGB::Purple;
   leds[ledActual -1] = CRGB::Purple;
@@ -92,14 +119,14 @@ void temporizador(){
 void setup() {
   // put your setup code here, to run once:
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-  pinMode(13, OUTPUT);
+  pinMode(13, INPUT_PULLUP);
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  Serial.println(estadoEjeY);
   revisarSensores();
   logica();
   encenderLeds();
 }
-
-
