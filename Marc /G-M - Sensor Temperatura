@@ -1,0 +1,38 @@
+#include "DHT.h"
+#include <LiquidCrystal_I2C.h>
+#include <wire.h>
+
+#define DHTPIN 7     // Pin donde está conectado el sensor
+#define DHTTYPE DHT11   // Descomentar si se usa el DHT 11
+//#define DHTTYPE DHT22   // Sensor DHT22
+
+LiquidCrystal_I2C lcd(0x27,  16, 2);
+DHT dht(DHTPIN, DHTTYPE);
+long duracionMedida = 600;
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Iniciando...");
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+}
+
+
+void loop() {
+  delay(duracionMedida);
+  float h = dht.readHumidity(); //Leemos la Humedad
+  float t = dht.readTemperature(); //Leemos la temperatura en grados Celsius
+  
+
+
+  lcd.setCursor(0,0);
+  lcd.print("Humedad: ");
+  lcd.print(h);
+  lcd.print("%t");
+  lcd.setCursor(0,1);
+  lcd.print("Temperatura: ");
+  lcd.print(t);
+  lcd.print("*C");
+
+
+}
