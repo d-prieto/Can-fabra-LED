@@ -4,29 +4,30 @@
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 int a = 2;
+int i = 16;
 int Boton = 0 ;
 int BotonAnterior = 0;
 int PinBoton = 2;
-LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27,16,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 void setup()
 {
   lcd.init();                      // initialize the lcd 
   lcd.init();
   Serial.begin(9600);
-  pinMode(PinBoton, INPUT);
+  pinMode(PinBoton, INPUT_PULLUP);
   // Print a message to the LCD.
-  
+ 
  
 }
 
 
 void loop()
 {
-  Boton = digitalRead(2);
+  Boton = digitalRead(3);
  
    if ((Boton == LOW )&&(BotonAnterior == HIGH)){
-    a = 2;
+    a = 3;
     BotonAnterior = Boton;
    }else{
     a = 0;
@@ -34,8 +35,18 @@ void loop()
     BotonAnterior = Boton;
    }
   lcd.backlight();
-  lcd.setCursor(a,0);
+  for( i=16;i>0;i--){
+    lcd.setCursor(i,2);
+  lcd.print("C");
+  delay(200);
+  lcd.clear();
+  
+  }
+  if(i==16){
+    i=0;
+  }
+  lcd.setCursor(0, 1);
   lcd.print("D");
-  Serial.println("Boton");
- 
-}
+  Serial.println(i);
+  }
+  
