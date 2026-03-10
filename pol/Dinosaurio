@@ -7,13 +7,24 @@ int a = 2;
 int i = 16;
 int Boton = 0 ;
 int BotonAnterior = 0;
-int PinBoton = 2;
+int PinBoton = 3;
+
+uint8_t Dinosaurio0[8] = {0b00000,0b00000,0b00000,0b00000,0b00011,0b00111,0b01111,0b11111};
+uint8_t Dinosaurio1[8] = {0b00000,0b00011,0b00111,0b01111,0b01110,0b01100,0b11100,0b11100};
+uint8_t Dinosaurio2[8] = {0b11111,0b01111,0b00111,0b00010,0b00010,0b00010,0b00010,0b00011};
+uint8_t Dinosaurio3[8] = {0b11111,0b11110,0b11100,0b00100,0b00100,0b00100,0b00100,0b00110};
+uint8_t Cactus0[8] = {0b010101,0b10101,0b10101,0b010101,0b01111,0b00100,0b00100,0b00100};
 LiquidCrystal_I2C lcd(0x27,16,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 void setup()
 {
   lcd.init();                      // initialize the lcd 
   lcd.init();
+  lcd.createChar(0, Dinosaurio0);
+  lcd.createChar(1, Dinosaurio1);
+  lcd.createChar(2, Dinosaurio2);
+  lcd.createChar(3, Dinosaurio3);
+  lcd.createChar(4, Cactus0);
   Serial.begin(9600);
   pinMode(PinBoton, INPUT_PULLUP);
   // Print a message to the LCD.
@@ -24,7 +35,7 @@ void setup()
 
 void loop()
 {
-  Boton = digitalRead(3);
+  Boton = digitalRead(PinBoton);
  
    if ((Boton == LOW )&&(BotonAnterior == HIGH)){
     a = 3;
@@ -45,6 +56,22 @@ void loop()
   if(i==16){
     i=0;
   }
+
+
+  
+  lcd.backlight();
+  lcd.setCursor(1, 2);
+  lcd.print("D");
+  lcd.printstr(0);
+  lcd.printstr(1);
+  lcd.setCursor(0, 3);
+ lcd.printstr(2);
+  lcd.printstr(3);
+  Serial.println(digitalRead(PinBoton));
+
+
+  }
+  
   lcd.setCursor(0, 1);
   lcd.print("D");
   Serial.println(i);
