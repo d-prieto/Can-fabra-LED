@@ -1,0 +1,136 @@
+const int pinENA = 6;
+const int pinIN1 = 7;
+const int pinIN2 = 8;
+const int pinIN3 = 9;
+const int pinIN4 = 10;
+const int pinENB = 11;
+
+const int waitTime = 2000;  //espera entre fases
+const int speed = 200;    //velocidad de giro
+
+const int pinMotorA[3] = { pinENA, pinIN1, pinIN2 };
+const int pinMotorB[3] = { pinENB, pinIN3, pinIN4 };
+
+void setup()
+{
+  pinMode(pinIN1, OUTPUT);
+  pinMode(pinIN2, OUTPUT);
+  pinMode(pinENA, OUTPUT);
+  pinMode(pinIN3, OUTPUT);
+  pinMode(pinIN4, OUTPUT);
+  pinMode(pinENB, OUTPUT);
+}
+
+void loop()
+{
+  moveForward(pinMotorA, 180);
+  moveForward(pinMotorB, 180);
+  delay(waitTime);
+
+  moveBackward(pinMotorA, 180);
+  moveBackward(pinMotorB, 180);
+  delay(waitTime);
+
+  fullStop(pinMotorA);
+  fullStop(pinMotorB);
+  delay(waitTime);
+}
+
+void moveForward(const int pinMotor[3], int speed)
+{
+  digitalWrite(pinMotor[1], HIGH);
+  digitalWrite(pinMotor[2], LOW);
+
+  analogWrite(pinMotor[0], speed);
+}
+
+void moveBackward(const int pinMotor[3], int speed)
+{
+  digitalWrite(pinMotor[1], LOW);
+  digitalWrite(pinMotor[2], HIGH);
+
+  analogWrite(pinMotor[0], speed);
+}
+
+void fullStop(const int pinMotor[3])
+{
+  digitalWrite(pinMotor[1], LOW);
+  digitalWrite(pinMotor[2], LOW);
+
+  analogWrite(pinMotor[0], 0);
+}
+
+
+________________________________________________________________________
+
+
+
+/*
+  Serial Event example
+
+  When new serial data arrives, this sketch adds it to a String.
+  When a newline is received, the loop prints the string and clears it.
+
+  A good test for this is to try it with a GPS receiver that sends out
+  NMEA 0183 sentences.
+
+  NOTE: The serialEvent() feature is not available on the Leonardo, Micro, or
+  other ATmega32U4 based boards.
+
+  created 9 May 2011
+  by Tom Igoe
+
+  This example code is in the public domain.
+
+  https://docs.arduino.cc/built-in-examples/communication/SerialEvent/
+*/
+
+String inputString = "";      // a String to hold incoming data
+bool stringComplete = false;  // whether the string is complete
+
+void setup() {
+  // initialize serial:
+  Serial.begin(9600);
+  // reserve 200 bytes for the inputString:
+  inputString.reserve(200);
+}
+
+void loop() {
+  // print the string when a newline arrives:
+  if (inputString == "Delante\n") {
+    Serial.println("avanzar");
+  }
+  else if (inputString == "Atras\n") {
+    Serial.println("retroceder");
+  }
+  else if (inputString == "Derecha\n") {
+    Serial.println("girarD, avanzar");
+  }
+  else if (inputString == "Izquierda\n") {
+    Serial.println("girarI, avanzar");
+  }
+  delay (1000);
+  Serial.println("parado");
+  inputString = "";
+  stringComplete = false;
+
+}
+
+/*
+  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
+  routine is run between each time loop() runs, so using delay inside loop can
+  delay response. Multiple bytes of data may be available.
+*/
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
