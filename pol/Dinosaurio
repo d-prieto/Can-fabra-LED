@@ -1,4 +1,4 @@
-/YWROBOT
+//YWROBOT
 //Compatible with the Arduino IDE 1.0
 //Library version:1.1
 #include <Wire.h> 
@@ -10,7 +10,7 @@ int Boton = 0 ;
 int BotonAnt = 0;
 int PinBoton = 3;
 unsigned long  tAnt = 0;
-unsigned long intervalo = 2000;
+unsigned long intervalo = 400;
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #define printByte(args)  write(args);
@@ -18,24 +18,35 @@ unsigned long intervalo = 2000;
 #define printByte(args)  print(args,BYTE);
 #endif
 
-uint8_t Dinosaurio[8] = {0b00110,0b00111,0b01110,0b01100,0b01100,0b0110,0b00101,0b00101};
-uint8_t Dinosaurio0[8] = {0b00011,0b11111,0b11111,0b11100,0b01100,0b0110,0b01110,0b11000};
-uint8_t Dinosaurio1[8] = {0b00000,0b00000,0b00011,0b00111,0b01110,0b11100,0b11000,0b11000};// Acabado: cuello del Dinosaurio
+uint8_t Dinosaurio[8] = {0b00000,0b00000,0b00000,0b00000,0b00000,0b00111,0b01111,0b11111};
+uint8_t Dinosaurio0[8] = {0b00000,0b11100,0b11011,0b01111,0b00110,0b00000,0b00000,0b00000};//Acabado:cabeza del Dinosauro
+uint8_t Dinosaurio1[8] = {0b00000,0b00000,0b00011,0b00111,0b01110,0b11100,0b11000,0b11100};// Acabado: cuello del Dinosaurio
 uint8_t Dinosaurio2[8] = {0b11111,0b01111,0b00111,0b00010,0b00010,0b00010,0b00010,0b00011};// cuerpo izqierda
-uint8_t Dinosaurio3[8] = {0b11111,0b11110,0b11100,0b00100,0b00100,0b00100,0b00100,0b00110};//cuerpo Derecha
+uint8_t Dinosaurio3[8] = {0b11110,0b11100,0b11000,0b01000,0b01000,0b01000,0b01000,0b01100};
 uint8_t Cactus0[8] = {0b010101,0b10101,0b10101,0b010101,0b11111,0b00100,0b00100,0b00100};
 uint8_t Cactus1[8] = {0b010101,0b10101,0b10101,0b010101,0b11111,0b00100,0b00100,0b00100};
 LiquidCrystal_I2C lcd(0x27,16,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
-
+ void dinosaurio(){
+  lcd.setCursor(2, a);
+  lcd.printByte(0);
+  lcd.setCursor(1, a);
+  lcd.printByte(1);
+  lcd.setCursor(0, b);
+  lcd.printByte(2);
+  lcd.setCursor(1, b);
+  lcd.printByte(3);
+  lcd.setCursor(0, a);
+  lcd.printByte(6);
+ }
 
  void obstaculos ()   {
   lcd.backlight();
     lcd.clear();
-    lcd.setCursor(i,a);
+    lcd.setCursor(i,2);
   
   lcd.printByte(4);
-   lcd.setCursor(i,b);
+   lcd.setCursor(i,3);
    lcd.printByte(5);
    Serial.println(Boton);
 
@@ -47,22 +58,28 @@ LiquidCrystal_I2C lcd(0x27,16,4);  // set the LCD address to 0x27 for a 16 chars
      Boton = digitalRead(PinBoton);
 
   if( Boton==0 && BotonAnt==1){
-      a = 0;
-      b = 1;
-    }
+      a = 2;
+      b = 3;
+    
     Boton=BotonAnt;
-  }
+  }else{
+    a = 0;
+    b = 1;
+    Boton=BotonAnt;
+      }
+      }
 
 void setup()
 {
   lcd.init();                      // initialize the lcd 
   lcd.init();
-  lcd.createChar(0, Dinosaurio);
+  lcd.createChar(0, Dinosaurio0);
   lcd.createChar(1, Dinosaurio1);
   lcd.createChar(2, Dinosaurio2);
   lcd.createChar(3, Dinosaurio3);
   lcd.createChar(4, Cactus0);
   lcd.createChar(5, Cactus1);
+  lcd.createChar(6, Dinosaurio);
   Serial.begin(9600);
   pinMode(PinBoton, INPUT);
   // Print a message to the LCD.
@@ -73,16 +90,17 @@ void setup()
 
 void loop()
 {
+  Serial.println(Boton);
   unsigned long tAct = millis();
     if (tAct - tAnt > intervalo) {
     // save the current time as the last time you changed an LED
-    tAct = tAnt;
+    Serial.println("estoy en el intervalo");
+    tAnt = tAct;
     i--;
     obstaculos();
     if( i==0){
       i=16;
     }
     boton();}
+    dinosaurio();
    }
-
-  
