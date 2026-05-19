@@ -1,0 +1,89 @@
+gogogaga
+
+#include <SoftwareSerial.h>
+
+const int pinENA = 6;
+const int pinIN1 = 7;
+const int pinIN2 = 8;
+const int pinIN3 = 9;
+const int pinIN4 = 10;
+const int pinENB = 11;
+
+const int speed = 200;    //velocidad de giro
+
+const int pinMotorA[3] = { pinENA, pinIN1, pinIN2 };
+const int pinMotorB[3] = { pinENB, pinIN3, pinIN4 };
+
+SoftwareSerial BTSerial(2, 3);
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+  Serial.println("Initializing Bluetooth Module in Data Mode\n");
+
+pinMode(pinIN1, OUTPUT);
+pinMode(pinIN2, OUTPUT);
+pinMode(pinENA, OUTPUT);
+pinMode(pinIN3, OUTPUT);
+pinMode(pinIN4, OUTPUT);
+pinMode(pinENB, OUTPUT);
+BTSerial.begin(9600);
+Serial.print("Bluetooth Module is Successfully Initialized in Data Mode\n");
+}
+
+void moveForward(const int pinMotor[3], int speed)
+{
+  digitalWrite(pinMotor[1], HIGH);
+  digitalWrite(pinMotor[2], LOW);
+
+  analogWrite(pinMotor[0], speed);
+}
+
+void moveBackward(const int pinMotor[3], int speed)
+{
+  digitalWrite(pinMotor[1], LOW);
+  digitalWrite(pinMotor[2], HIGH);
+
+  analogWrite(pinMotor[0], speed);
+}
+
+void fullStop(const int pinMotor[3])
+{
+  digitalWrite(pinMotor[1], LOW);
+  digitalWrite(pinMotor[2], LOW);
+
+  analogWrite(pinMotor[0], 0);
+}
+
+void loop() {
+
+  if (Serial.available()) {
+
+    char Lletra = Serial.read();
+
+    BTSerial.write(Lletra);
+
+    if (Lletra == '3') {
+      moveForward(pinMotorA, 180);
+      moveForward(pinMotorB, 180);
+    }
+
+    else if (Lletra == '4') {
+      moveBackward(pinMotorA, 180);
+      moveBackward(pinMotorB, 180);
+    }
+
+    else if (Lletra == '1') {
+      moveForward(pinMotorA, 180);
+      fullStop(pinMotorB);
+    }
+
+    else if (Lletra == '2') {
+      fullStop(pinMotorA);
+      moveForward(pinMotorB, 180);
+    }
+  }
+
+  if (BTSerial.available()) {
+    Serial.write(BTSerial.read());
+  }
+}
