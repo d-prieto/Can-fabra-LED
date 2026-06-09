@@ -1,14 +1,14 @@
-//YWROBOT
+/YWROBOT
 //Compatible with the Arduino IDE 1.0
 //Library version:1.1
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
+int PinBoton = 2;
 int a = 2;
 int b = 3;
 int i = 16;
 int Boton = 0 ;
 int BotonAnt = 0;
-int PinBoton = 3;
 unsigned long  tAnt = 0;
 unsigned long intervalo = 400;
 
@@ -54,17 +54,19 @@ LiquidCrystal_I2C lcd(0x27,16,4);  // set the LCD address to 0x27 for a 16 chars
   }
 
   void boton (){
-    
+     Serial.println("estoy en el boton");
      Boton = digitalRead(PinBoton);
+       //Serial.println(a);
+       Serial.println(PinBoton);
 
   if( Boton==0 && BotonAnt==1){
-      a = 2;
-      b = 3;
+      a = 0;
+      b = 1;
     
     Boton=BotonAnt;
   }else{
-    a = 0;
-    b = 1;
+    a = 2;
+    b = 3;
     Boton=BotonAnt;
       }
       }
@@ -73,6 +75,7 @@ void setup()
 {
   lcd.init();                      // initialize the lcd 
   lcd.init();
+  pinMode(PinBoton,INPUT);
   lcd.createChar(0, Dinosaurio0);
   lcd.createChar(1, Dinosaurio1);
   lcd.createChar(2, Dinosaurio2);
@@ -81,7 +84,8 @@ void setup()
   lcd.createChar(5, Cactus1);
   lcd.createChar(6, Dinosaurio);
   Serial.begin(9600);
-  pinMode(PinBoton, INPUT);
+
+
   // Print a message to the LCD.
  
  
@@ -90,7 +94,7 @@ void setup()
 
 void loop()
 {
-  Serial.println(Boton);
+ 
   unsigned long tAct = millis();
     if (tAct - tAnt > intervalo) {
     // save the current time as the last time you changed an LED
@@ -101,6 +105,7 @@ void loop()
     if( i==0){
       i=16;
     }
-    boton();}
+        boton();
+    }
     dinosaurio();
-   }
+}
